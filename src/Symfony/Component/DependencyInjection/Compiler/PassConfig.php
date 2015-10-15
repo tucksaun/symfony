@@ -26,6 +26,7 @@ class PassConfig
     const TYPE_BEFORE_OPTIMIZATION = 'beforeOptimization';
     const TYPE_BEFORE_REMOVING = 'beforeRemoving';
     const TYPE_OPTIMIZE = 'optimization';
+    const TYPE_TAGS_RESOLUTION = 'tagsResolution';
     const TYPE_REMOVE = 'removing';
 
     private $mergePass;
@@ -33,6 +34,7 @@ class PassConfig
     private $beforeOptimizationPasses = array();
     private $beforeRemovingPasses = array();
     private $optimizationPasses;
+    private $tagsResolutionPasses = array();
     private $removingPasses;
 
     /**
@@ -79,6 +81,7 @@ class PassConfig
         return array_merge(
             array($this->mergePass),
             $this->beforeOptimizationPasses,
+            $this->tagsResolutionPasses,
             $this->optimizationPasses,
             $this->beforeRemovingPasses,
             $this->removingPasses,
@@ -156,6 +159,16 @@ class PassConfig
     }
 
     /**
+     * Gets all passes for the TagsResolution pass.
+     *
+     * @return array An array of passes
+     */
+    public function getTagsResolutionPasses()
+    {
+        return $this->tagsResolutionPasses;
+    }
+
+    /**
      * Gets all passes for the Merge pass.
      *
      * @return array An array of passes
@@ -223,5 +236,15 @@ class PassConfig
     public function setRemovingPasses(array $passes)
     {
         $this->removingPasses = $passes;
+    }
+
+    /**
+     * Sets the TagsResolution passes.
+     *
+     * @param array $passes An array of passes
+     */
+    public function setTagsResolutionPasses(array $passes)
+    {
+        $this->tagsResolutionPasses = $passes;
     }
 }
