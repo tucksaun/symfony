@@ -12,6 +12,7 @@
 namespace Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\Reference;
 
@@ -34,7 +35,7 @@ class AddCacheWarmerPass implements CompilerPassInterface
         $warmers = array();
         foreach ($container->findTaggedServiceIds('kernel.cache_warmer') as $id => $attributes) {
             $priority = isset($attributes[0]['priority']) ? $attributes[0]['priority'] : 0;
-            $warmers[$priority][] = new Reference($id);
+            $warmers[$priority][] = new Reference($id, ContainerInterface::NULL_ON_INVALID_REFERENCE);
         }
 
         if (empty($warmers)) {

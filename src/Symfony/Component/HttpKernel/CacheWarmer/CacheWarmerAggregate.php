@@ -24,6 +24,10 @@ class CacheWarmerAggregate implements CacheWarmerInterface
     public function __construct(array $warmers = array())
     {
         foreach ($warmers as $warmer) {
+            if (null === $warmer) {
+                continue;
+            }
+
             $this->add($warmer);
         }
     }
