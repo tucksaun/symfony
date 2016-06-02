@@ -56,7 +56,16 @@ class HttpBasicLdapFactory extends HttpBasicFactory
         $node
             ->children()
                 ->scalarNode('service')->defaultValue('ldap')->end()
-                ->scalarNode('dn_string')->defaultValue('{username}')->end()
+                ->arrayNode('dn_string')
+                    ->defaultValue(['{username}'])
+                    ->isRequired()
+                    ->requiresAtLeastOneElement()
+                    ->beforeNormalization()
+                        ->ifString()
+                        ->then(function ($v) { return [$v]; })
+                    ->end()
+                    ->prototype('scalar')->end()
+                ->end()
             ->end()
         ;
     }

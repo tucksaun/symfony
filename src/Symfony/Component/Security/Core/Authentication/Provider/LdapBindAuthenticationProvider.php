@@ -32,7 +32,7 @@ class LdapBindAuthenticationProvider extends UserAuthenticationProvider
 {
     private $userProvider;
     private $ldap;
-    private $dnString;
+    private $dnStrings;
 
     /**
      * Constructor.
@@ -41,16 +41,19 @@ class LdapBindAuthenticationProvider extends UserAuthenticationProvider
      * @param UserCheckerInterface  $userChecker                A UserChecker
      * @param string                $providerKey                The provider key
      * @param LdapInterface         $ldap                       A Ldap client
-     * @param string                $dnString                   A string used to create the bind DN
+     * @param string|array          $dnStrings                  A string or an array of strings used to create the bind DN
      * @param bool                  $hideUserNotFoundExceptions Whether to hide user not found exception or not
      */
-    public function __construct(UserProviderInterface $userProvider, UserCheckerInterface $userChecker, $providerKey, LdapInterface $ldap, $dnString = '{username}', $hideUserNotFoundExceptions = true)
+    public function __construct(UserProviderInterface $userProvider, UserCheckerInterface $userChecker, $providerKey, LdapInterface $ldap, $dnStrings = '{username}', $hideUserNotFoundExceptions = true)
     {
         parent::__construct($userChecker, $providerKey, $hideUserNotFoundExceptions);
 
         $this->userProvider = $userProvider;
         $this->ldap = $ldap;
-        $this->dnString = $dnString;
+        if (!is_array($dnStrings)) {
+            $dnStrings = [$dnStrings];
+        }
+        $this->dnStrings = $dnStrings;
     }
 
     /**
@@ -77,13 +80,16 @@ class LdapBindAuthenticationProvider extends UserAuthenticationProvider
             throw new BadCredentialsException('The presented password must not be empty.');
         }
 
-        try {
-            $username = $this->ldap->escape($username, '', LdapInterface::ESCAPE_DN);
-            $dn = str_replace('{username}', $username, $this->dnString);
+        $username = $this->ldap->escape($username, '', LdapInterface::ESCAPE_DN);
+        foreach ($this->dnStrings as $dnString) {
+            try {
+                $dn = str_replace('{username}', $username, $dnString);
+                $this->ldap->bind($dn, $password);
 
-            $this->ldap->bind($dn, $password);
-        } catch (ConnectionException $e) {
-            throw new BadCredentialsException('The presented password is invalid.');
+                return;
+            } catch (ConnectionException $e) {
+            }
         }
+        throw new BadCredentialsException('The presented password is invalid.');
     }
 }
