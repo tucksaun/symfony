@@ -16,6 +16,7 @@ use Symfony\Component\HttpKernel\Controller\ArgumentValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
@@ -47,11 +48,15 @@ final class UserValueResolver implements ArgumentValueResolverInterface
         $user = $token->getUser();
 
         // in case it's not an object we cannot do anything with it; E.g. "anon."
-        return $user instanceof UserInterface;
+        return $user instanceof UserInterface || !$argument->isNullable();
     }
 
     public function resolve(Request $request, ArgumentMetadata $argument): iterable
     {
-        yield $this->tokenStorage->getToken()->getUser();
+        if ($token = $this->tokenStorage->getToken()) {
+            yield $token->getUser();
+        }
+
+        throw new AuthenticationException();
     }
 }
