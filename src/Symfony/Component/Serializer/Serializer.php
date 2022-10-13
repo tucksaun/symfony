@@ -30,6 +30,7 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use Symfony\Component\Serializer\Normalizer\SupportedTypesMethodInterface;
 
 /**
  * Serializer serializes and deserializes data.
@@ -256,6 +257,24 @@ class Serializer implements SerializerInterface, ContextAwareNormalizerInterface
                     continue;
                 }
 
+                if ($normalizer instanceof SupportedTypesMethodInterface && null !== $supportedTypes = $normalizer->getSupportedTypes()) {
+                    foreach ($supportedTypes as $supportedType => $isCacheable) {
+                        if ($type !== $supportedType && !is_subclass_of($type, $supportedType, true)) {
+                            continue;
+                        }
+
+                        if ($isCacheable && $normalizer->supportsNormalization($data, $format, $context)) {
+                            $this->normalizerCache[$format][$type][$k] = true;
+                            break 2;
+                        }
+
+                        $this->normalizerCache[$format][$type][$k] = false;
+                        break;
+                    }
+
+                    continue;
+                }
+
                 if (!$normalizer instanceof CacheableSupportsMethodInterface || !$normalizer->hasCacheableSupportsMethod()) {
                     $this->normalizerCache[$format][$type][$k] = false;
                 } elseif ($normalizer->supportsNormalization($data, $format, $context)) {
@@ -290,6 +309,24 @@ class Serializer implements SerializerInterface, ContextAwareNormalizerInterface
 
             foreach ($this->normalizers as $k => $normalizer) {
                 if (!$normalizer instanceof DenormalizerInterface) {
+                    continue;
+                }
+
+                if ($normalizer instanceof SupportedTypesMethodInterface && null !== $supportedTypes = $normalizer->getSupportedTypes()) {
+                    foreach ($supportedTypes as $supportedType => $isCacheable) {
+                        if ($class !== $supportedType && !is_subclass_of($class, $supportedType, true)) {
+                            continue;
+                        }
+
+                        if ($isCacheable && $normalizer->supportsDenormalization(null, $class, $format, $context)) {
+                            $this->denormalizerCache[$format][$class][$k] = true;
+                            break 2;
+                        }
+
+                        $this->denormalizerCache[$format][$class][$k] = false;
+                        break;
+                    }
+
                     continue;
                 }
 

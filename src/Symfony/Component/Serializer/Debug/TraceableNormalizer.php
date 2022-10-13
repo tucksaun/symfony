@@ -17,6 +17,7 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use Symfony\Component\Serializer\Normalizer\SupportedTypesMethodInterface;
 use Symfony\Component\Serializer\SerializerAwareInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -27,12 +28,21 @@ use Symfony\Component\Serializer\SerializerInterface;
  *
  * @internal
  */
-class TraceableNormalizer implements NormalizerInterface, DenormalizerInterface, SerializerAwareInterface, NormalizerAwareInterface, DenormalizerAwareInterface, CacheableSupportsMethodInterface
+class TraceableNormalizer implements NormalizerInterface, DenormalizerInterface, SerializerAwareInterface, NormalizerAwareInterface, DenormalizerAwareInterface, SupportedTypesMethodInterface, CacheableSupportsMethodInterface
 {
     public function __construct(
         private NormalizerInterface|DenormalizerInterface $normalizer,
         private SerializerDataCollector $dataCollector,
     ) {
+    }
+
+    public function getSupportedTypes(): ?array
+    {
+        if ($this->normalizer instanceof SupportedTypesMethodInterface) {
+            return $this->normalizer->getSupportedTypes();
+        }
+
+        return null;
     }
 
     public function normalize(mixed $object, string $format = null, array $context = []): array|string|int|float|bool|\ArrayObject|null

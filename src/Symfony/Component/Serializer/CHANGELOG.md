@@ -5,6 +5,8 @@ CHANGELOG
 ---
 
  * Add `XmlEncoder::SAVE_OPTIONS` context option
+ * Add `SupportedTypesMethodInterface` for normalizers and denormalizers that can provide supported types outside from calls to their `supports*()` methods
+ * Deprecate `CacheableSupportsMethodInterface` in favor of implementing `SupportedTypesMethodInterface`
 
 6.2
 ---
