@@ -48,6 +48,7 @@ use Symfony\Component\Serializer\Normalizer\NormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
+use Symfony\Component\Serializer\Normalizer\SupportedTypesMethodInterface;
 use Symfony\Component\Serializer\Normalizer\UidNormalizer;
 use Symfony\Component\Serializer\Normalizer\UnwrappingDenormalizer;
 use Symfony\Component\Serializer\Serializer;
@@ -1235,6 +1236,76 @@ class SerializerTest extends TestCase
             [new ClassMetadataFactory(new AnnotationLoader(new AnnotationReader()))],
         ];
     }
+
+    public function testSerializerUsesSupportedTypesMethod()
+    {
+        $neverCalledNormalizer = $this->createMock(DummyNormalizer::class);
+        $neverCalledNormalizer
+            // once for normalization, once for denormalization
+            ->expects($this->exactly(2))
+            ->method('getSupportedTypes')
+            ->willReturn([
+                Foo::class => true,
+                Bar::class => false,
+            ]);
+
+        $supportedAndCachedNormalizer = $this->createMock(DummyNormalizer::class);
+        $supportedAndCachedNormalizer
+            // once for normalization, once for denormalization
+            ->expects($this->exactly(2))
+            ->method('getSupportedTypes')
+            ->willReturn([
+                Model::class => true,
+            ]);
+
+        $serializer = new Serializer(
+            [
+                $neverCalledNormalizer,
+                $supportedAndCachedNormalizer,
+                new ObjectNormalizer(),
+            ],
+            ['json' => new JsonEncoder()]
+        );
+
+        // Normalization process
+        $neverCalledNormalizer
+            ->expects($this->never())
+            ->method('supportsNormalization');
+        $neverCalledNormalizer
+            ->expects($this->never())
+            ->method('normalize');
+
+        $supportedAndCachedNormalizer
+            ->expects($this->once())
+            ->method('supportsNormalization')
+            ->willReturn(true);
+        $supportedAndCachedNormalizer
+            ->expects($this->exactly(2))
+            ->method('normalize')
+            ->willReturn(['foo' => 'bar']);
+
+        $serializer->normalize(new Model(), 'json');
+        $serializer->normalize(new Model(), 'json');
+
+        // Denormalization pass
+        $neverCalledNormalizer
+            ->expects($this->never())
+            ->method('supportsDenormalization');
+        $neverCalledNormalizer
+            ->expects($this->never())
+            ->method('denormalize');
+        $supportedAndCachedNormalizer
+            ->expects($this->once())
+            ->method('supportsDenormalization')
+            ->willReturn(true);
+        $supportedAndCachedNormalizer
+            ->expects($this->exactly(2))
+            ->method('denormalize')
+            ->willReturn(new Model());
+
+        $serializer->denormalize('foo', Model::class, 'json');
+        $serializer->denormalize('foo', Model::class, 'json');
+    }
 }
 
 class Model
@@ -1387,6 +1458,10 @@ class DummyList extends \ArrayObject
     {
         return new \ArrayIterator($this->list);
     }
+}
+
+abstract class DummyNormalizer implements NormalizerInterface, DenormalizerInterface, SupportedTypesMethodInterface
+{
 }
 
 interface NormalizerAwareNormalizer extends NormalizerInterface, NormalizerAwareInterface
