@@ -35,6 +35,11 @@ class CommandTest extends TestCase
         require_once self::$fixturesPath.'/TestCommand.php';
     }
 
+    protected function tearDown(): void
+    {
+        unset($_SERVER['SYMFONY_CLI_BINARY_NAME']);
+    }
+
     public function testConstructor()
     {
         $command = new Command('foo:bar');
@@ -169,6 +174,16 @@ class CommandTest extends TestCase
         $application->setDefaultCommand('namespace:name', true);
         $this->assertStringContainsString('The namespace:name command does...', $command->getProcessedHelp(), '->getProcessedHelp() replaces %command.name% correctly in single command applications');
         $this->assertStringNotContainsString('%command.full_name%', $command->getProcessedHelp(), '->getProcessedHelp() replaces %command.full_name% in single command applications');
+    }
+
+    public function testGetProcessedHelpIncludesSymfonyCli()
+    {
+        $command = new \TestCommand();
+        $command->setHelp('Example: %command.full_name% list');
+        $this->assertStringNotContainsString('Example: symfony console', $command->getProcessedHelp(), '->getProcessedHelp() doest not replaces %command.full_name% with Symfony CLI binary name if not detected');
+
+        $_SERVER['SYMFONY_CLI_BINARY_NAME'] = 'symfony';
+        $this->assertStringContainsString('Example: symfony console', $command->getProcessedHelp(), '->getProcessedHelp() replaces %command.full_name% with Symfony CLI binary name when detected');
     }
 
     public function testGetSetAliases()

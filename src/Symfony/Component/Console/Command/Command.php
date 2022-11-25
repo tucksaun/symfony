@@ -544,9 +544,15 @@ class Command
             '%command.name%',
             '%command.full_name%',
         ];
+
+        $scriptName = $_SERVER['PHP_SELF'];
+        if (isset($_SERVER['SYMFONY_CLI_BINARY_NAME'])) {
+            $scriptName = $_SERVER['SYMFONY_CLI_BINARY_NAME'].' console';
+        }
+
         $replacements = [
             $name,
-            $isSingleCommand ? $_SERVER['PHP_SELF'] : $_SERVER['PHP_SELF'].' '.$name,
+            $isSingleCommand ? $scriptName : $scriptName.' '.$name,
         ];
 
         return str_replace($placeholders, $replacements, $this->getHelp() ?: $this->getDescription());
