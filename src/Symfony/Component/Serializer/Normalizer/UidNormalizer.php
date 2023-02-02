@@ -17,7 +17,7 @@ use Symfony\Component\Serializer\Exception\NotNormalizableValueException;
 use Symfony\Component\Uid\AbstractUid;
 use Symfony\Component\Uid\Uuid;
 
-final class UidNormalizer implements NormalizerInterface, DenormalizerInterface, CacheableSupportsMethodInterface
+final class UidNormalizer implements NormalizerInterface, DenormalizerInterface, CacheableSupportsMethodInterface, SupportedTypesMethodInterface
 {
     public const NORMALIZATION_FORMAT_KEY = 'uid_normalization_format';
 
@@ -39,6 +39,13 @@ final class UidNormalizer implements NormalizerInterface, DenormalizerInterface,
     public function __construct(array $defaultContext = [])
     {
         $this->defaultContext = array_merge($this->defaultContext, $defaultContext);
+    }
+
+    public function getSupportedTypes(): ?array
+    {
+        return [
+            AbstractUid::class => $this->hasCacheableSupportsMethod(),
+        ];
     }
 
     /**

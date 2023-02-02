@@ -22,7 +22,7 @@ use Symfony\Component\Serializer\Exception\InvalidArgumentException;
  * @author Kévin Dunglas <dunglas@gmail.com>
  * @author Yonel Ceruto <yonelceruto@gmail.com>
  */
-class ProblemNormalizer implements NormalizerInterface, CacheableSupportsMethodInterface
+class ProblemNormalizer implements NormalizerInterface, CacheableSupportsMethodInterface, SupportedTypesMethodInterface
 {
     public const TITLE = 'title';
     public const TYPE = 'type';
@@ -38,6 +38,13 @@ class ProblemNormalizer implements NormalizerInterface, CacheableSupportsMethodI
     {
         $this->debug = $debug;
         $this->defaultContext = $defaultContext + $this->defaultContext;
+    }
+
+    public function getSupportedTypes(): ?array
+    {
+        return [
+            FlattenException::class => $this->hasCacheableSupportsMethod(),
+        ];
     }
 
     public function normalize(mixed $object, string $format = null, array $context = []): array

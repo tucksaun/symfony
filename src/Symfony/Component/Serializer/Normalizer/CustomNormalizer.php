@@ -17,10 +17,17 @@ use Symfony\Component\Serializer\SerializerAwareTrait;
 /**
  * @author Jordi Boggiano <j.boggiano@seld.be>
  */
-class CustomNormalizer implements NormalizerInterface, DenormalizerInterface, SerializerAwareInterface, CacheableSupportsMethodInterface
+class CustomNormalizer implements NormalizerInterface, DenormalizerInterface, SerializerAwareInterface, CacheableSupportsMethodInterface, SupportedTypesMethodInterface
 {
     use ObjectToPopulateTrait;
     use SerializerAwareTrait;
+
+    public function getSupportedTypes(): ?array
+    {
+        return [
+            NormalizableInterface::class => $this->hasCacheableSupportsMethod(),
+        ];
+    }
 
     public function normalize(mixed $object, string $format = null, array $context = []): array|string|int|float|bool|\ArrayObject|null
     {

@@ -23,7 +23,7 @@ use Symfony\Component\Serializer\Exception\NotNormalizableValueException;
  *
  * @author Kévin Dunglas <dunglas@gmail.com>
  */
-class DataUriNormalizer implements NormalizerInterface, DenormalizerInterface, CacheableSupportsMethodInterface
+class DataUriNormalizer implements NormalizerInterface, DenormalizerInterface, CacheableSupportsMethodInterface, SupportedTypesMethodInterface
 {
     private const SUPPORTED_TYPES = [
         \SplFileInfo::class => true,
@@ -43,6 +43,11 @@ class DataUriNormalizer implements NormalizerInterface, DenormalizerInterface, C
         }
 
         $this->mimeTypeGuesser = $mimeTypeGuesser;
+    }
+
+    public function getSupportedTypes(): ?array
+    {
+        return self::SUPPORTED_TYPES;
     }
 
     public function normalize(mixed $object, string $format = null, array $context = []): string

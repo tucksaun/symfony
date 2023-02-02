@@ -19,7 +19,7 @@ use Symfony\Component\Serializer\Exception\LogicException;
  *
  * @author Fred Cox <mcfedr@gmail.com>
  */
-class JsonSerializableNormalizer extends AbstractNormalizer
+class JsonSerializableNormalizer extends AbstractNormalizer implements SupportedTypesMethodInterface
 {
     public function normalize(mixed $object, string $format = null, array $context = []): array|string|int|float|bool|\ArrayObject|null
     {
@@ -36,6 +36,13 @@ class JsonSerializableNormalizer extends AbstractNormalizer
         }
 
         return $this->serializer->normalize($object->jsonSerialize(), $format, $context);
+    }
+
+    public function getSupportedTypes(): ?array
+    {
+        return [
+            \JsonSerializable::class => $this->hasCacheableSupportsMethod(),
+        ];
     }
 
     /**
