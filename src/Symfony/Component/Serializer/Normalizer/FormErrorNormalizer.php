@@ -16,7 +16,7 @@ use Symfony\Component\Form\FormInterface;
 /**
  * Normalizes invalid Form instances.
  */
-final class FormErrorNormalizer implements NormalizerInterface, CacheableSupportsMethodInterface
+final class FormErrorNormalizer implements NormalizerInterface, CacheableSupportsMethodInterface, SupportedTypesMethodInterface
 {
     public const TITLE = 'title';
     public const TYPE = 'type';
@@ -36,6 +36,13 @@ final class FormErrorNormalizer implements NormalizerInterface, CacheableSupport
         }
 
         return $data;
+    }
+
+    public function getSupportedTypes(): array
+    {
+        return [
+            FormInterface::class => $this->hasCacheableSupportsMethod(),
+        ];
     }
 
     public function supportsNormalization(mixed $data, string $format = null, array $context = []): bool

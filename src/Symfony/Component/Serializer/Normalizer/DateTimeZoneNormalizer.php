@@ -20,8 +20,15 @@ use Symfony\Component\Serializer\Exception\NotNormalizableValueException;
  *
  * @author Jérôme Desjardins <jewome62@gmail.com>
  */
-class DateTimeZoneNormalizer implements NormalizerInterface, DenormalizerInterface, CacheableSupportsMethodInterface
+class DateTimeZoneNormalizer implements NormalizerInterface, DenormalizerInterface, CacheableSupportsMethodInterface, SupportedTypesMethodInterface
 {
+    public function getSupportedTypes(): array
+    {
+        return [
+            \DateTimeZone::class => $this->hasCacheableSupportsMethod(),
+        ];
+    }
+
     /**
      * @throws InvalidArgumentException
      */

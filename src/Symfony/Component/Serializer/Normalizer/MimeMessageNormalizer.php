@@ -28,7 +28,7 @@ use Symfony\Component\Serializer\SerializerInterface;
  *
  * Emails using resources for any parts are not serializable.
  */
-final class MimeMessageNormalizer implements NormalizerInterface, DenormalizerInterface, SerializerAwareInterface, CacheableSupportsMethodInterface
+final class MimeMessageNormalizer implements NormalizerInterface, DenormalizerInterface, SerializerAwareInterface, CacheableSupportsMethodInterface, SupportedTypesMethodInterface
 {
     private $serializer;
     private $normalizer;
@@ -40,6 +40,17 @@ final class MimeMessageNormalizer implements NormalizerInterface, DenormalizerIn
         $this->normalizer = $normalizer;
         $this->headerClassMap = (new \ReflectionClassConstant(Headers::class, 'HEADER_CLASS_MAP'))->getValue();
         $this->headersProperty = new \ReflectionProperty(Headers::class, 'headers');
+    }
+
+    public function getSupportedTypes(): array
+    {
+        return [
+            Message::class => $this->hasCacheableSupportsMethod(),
+            Headers::class => $this->hasCacheableSupportsMethod(),
+            HeaderInterface::class => $this->hasCacheableSupportsMethod(),
+            Address::class => $this->hasCacheableSupportsMethod(),
+            AbstractPart::class => $this->hasCacheableSupportsMethod(),
+        ];
     }
 
     public function setSerializer(SerializerInterface $serializer): void

@@ -21,7 +21,7 @@ use Symfony\Component\Serializer\Exception\NotNormalizableValueException;
  *
  * @author Kévin Dunglas <dunglas@gmail.com>
  */
-class DateTimeNormalizer implements NormalizerInterface, DenormalizerInterface, CacheableSupportsMethodInterface
+class DateTimeNormalizer implements NormalizerInterface, DenormalizerInterface, CacheableSupportsMethodInterface, SupportedTypesMethodInterface
 {
     public const FORMAT_KEY = 'datetime_format';
     public const TIMEZONE_KEY = 'datetime_timezone';
@@ -45,6 +45,11 @@ class DateTimeNormalizer implements NormalizerInterface, DenormalizerInterface, 
     public function setDefaultContext(array $defaultContext): void
     {
         $this->defaultContext = array_merge($this->defaultContext, $defaultContext);
+    }
+
+    public function getSupportedTypes(): array
+    {
+        return self::SUPPORTED_TYPES;
     }
 
     /**

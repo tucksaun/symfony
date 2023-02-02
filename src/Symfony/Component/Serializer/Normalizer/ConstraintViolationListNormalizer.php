@@ -22,7 +22,7 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
  * @author Grégoire Pineau <lyrixx@lyrixx.info>
  * @author Kévin Dunglas <dunglas@gmail.com>
  */
-class ConstraintViolationListNormalizer implements NormalizerInterface, CacheableSupportsMethodInterface
+class ConstraintViolationListNormalizer implements NormalizerInterface, CacheableSupportsMethodInterface, SupportedTypesMethodInterface
 {
     public const INSTANCE = 'instance';
     public const STATUS = 'status';
@@ -37,6 +37,13 @@ class ConstraintViolationListNormalizer implements NormalizerInterface, Cacheabl
     {
         $this->defaultContext = $defaultContext;
         $this->nameConverter = $nameConverter;
+    }
+
+    public function getSupportedTypes(): ?array
+    {
+        return [
+            ConstraintViolationListInterface::class => $this->hasCacheableSupportsMethod(),
+        ];
     }
 
     public function normalize(mixed $object, string $format = null, array $context = []): array
