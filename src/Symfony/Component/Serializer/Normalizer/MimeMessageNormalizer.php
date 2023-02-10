@@ -45,11 +45,11 @@ final class MimeMessageNormalizer implements NormalizerInterface, DenormalizerIn
     public function getSupportedTypes(): array
     {
         return [
-            Message::class => $this->hasCacheableSupportsMethod(),
-            Headers::class => $this->hasCacheableSupportsMethod(),
-            HeaderInterface::class => $this->hasCacheableSupportsMethod(),
-            Address::class => $this->hasCacheableSupportsMethod(),
-            AbstractPart::class => $this->hasCacheableSupportsMethod(),
+            Message::class => true,
+            Headers::class => true,
+            HeaderInterface::class => true,
+            Address::class => true,
+            AbstractPart::class => true,
         ];
     }
 
@@ -114,6 +114,8 @@ final class MimeMessageNormalizer implements NormalizerInterface, DenormalizerIn
 
     public function hasCacheableSupportsMethod(): bool
     {
+        trigger_deprecation('symfony/serializer', '6.3', 'CacheableSupportsMethodInterface::hasCacheableSupportsMethod() is deprecated, use "getSupportedTypes()" return value instead.');
+
         return __CLASS__ === static::class;
     }
 }

@@ -41,7 +41,7 @@ final class FormErrorNormalizer implements NormalizerInterface, CacheableSupport
     public function getSupportedTypes(): array
     {
         return [
-            FormInterface::class => $this->hasCacheableSupportsMethod(),
+            FormInterface::class => __CLASS__ == self::class,
         ];
     }
 
@@ -85,6 +85,8 @@ final class FormErrorNormalizer implements NormalizerInterface, CacheableSupport
 
     public function hasCacheableSupportsMethod(): bool
     {
+        trigger_deprecation('symfony/serializer', '6.3', 'CacheableSupportsMethodInterface::hasCacheableSupportsMethod() is deprecated, use "getSupportedTypes()" return value instead.');
+
         return __CLASS__ === static::class;
     }
 }

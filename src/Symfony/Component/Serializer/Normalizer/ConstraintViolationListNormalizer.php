@@ -42,7 +42,7 @@ class ConstraintViolationListNormalizer implements NormalizerInterface, Cacheabl
     public function getSupportedTypes(): ?array
     {
         return [
-            ConstraintViolationListInterface::class => $this->hasCacheableSupportsMethod(),
+            ConstraintViolationListInterface::class => __CLASS__ == static::class,
         ];
     }
 
@@ -118,6 +118,8 @@ class ConstraintViolationListNormalizer implements NormalizerInterface, Cacheabl
 
     public function hasCacheableSupportsMethod(): bool
     {
+        trigger_deprecation('symfony/serializer', '6.3', 'CacheableSupportsMethodInterface::hasCacheableSupportsMethod() is deprecated, use "getSupportedTypes()" return value instead.');
+
         return __CLASS__ === static::class;
     }
 }

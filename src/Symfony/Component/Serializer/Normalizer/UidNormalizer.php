@@ -44,7 +44,7 @@ final class UidNormalizer implements NormalizerInterface, DenormalizerInterface,
     public function getSupportedTypes(): array
     {
         return [
-            AbstractUid::class => $this->hasCacheableSupportsMethod(),
+            AbstractUid::class => true,
         ];
     }
 
@@ -101,6 +101,8 @@ final class UidNormalizer implements NormalizerInterface, DenormalizerInterface,
 
     public function hasCacheableSupportsMethod(): bool
     {
+        trigger_deprecation('symfony/serializer', '6.3', 'CacheableSupportsMethodInterface::hasCacheableSupportsMethod() is deprecated, use "getSupportedTypes()" return value instead.');
+
         return __CLASS__ === static::class;
     }
 }

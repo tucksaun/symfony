@@ -131,6 +131,8 @@ class DateTimeNormalizer implements NormalizerInterface, DenormalizerInterface, 
 
     public function hasCacheableSupportsMethod(): bool
     {
+        trigger_deprecation('symfony/serializer', '6.3', 'CacheableSupportsMethodInterface::hasCacheableSupportsMethod() is deprecated, use "getSupportedTypes()" return value instead.');
+
         return __CLASS__ === static::class;
     }
 

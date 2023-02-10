@@ -25,7 +25,7 @@ final class BackedEnumNormalizer implements NormalizerInterface, DenormalizerInt
     public function getSupportedTypes(): array
     {
         return [
-           \BackedEnum::class => $this->hasCacheableSupportsMethod(),
+           \BackedEnum::class => true,
         ];
     }
 
@@ -70,6 +70,8 @@ final class BackedEnumNormalizer implements NormalizerInterface, DenormalizerInt
 
     public function hasCacheableSupportsMethod(): bool
     {
+        trigger_deprecation('symfony/serializer', '6.3', 'CacheableSupportsMethodInterface::hasCacheableSupportsMethod() is deprecated, use "getSupportedTypes()" return value instead.');
+
         return true;
     }
 }

@@ -43,7 +43,7 @@ class ProblemNormalizer implements NormalizerInterface, CacheableSupportsMethodI
     public function getSupportedTypes(): array
     {
         return [
-            FlattenException::class => $this->hasCacheableSupportsMethod(),
+            FlattenException::class => __CLASS__ === self::class,
         ];
     }
 
@@ -80,6 +80,8 @@ class ProblemNormalizer implements NormalizerInterface, CacheableSupportsMethodI
 
     public function hasCacheableSupportsMethod(): bool
     {
+        trigger_deprecation('symfony/serializer', '6.3', 'CacheableSupportsMethodInterface::hasCacheableSupportsMethod() is deprecated, use "getSupportedTypes()" return value instead.');
+
         return true;
     }
 }

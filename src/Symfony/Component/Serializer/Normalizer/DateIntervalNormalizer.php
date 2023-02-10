@@ -36,7 +36,7 @@ class DateIntervalNormalizer implements NormalizerInterface, DenormalizerInterfa
     public function getSupportedTypes(): array
     {
         return [
-            \DateInterval::class => $this->hasCacheableSupportsMethod(),
+            \DateInterval::class => __CLASS__ === static::class,
         ];
     }
 
@@ -62,6 +62,8 @@ class DateIntervalNormalizer implements NormalizerInterface, DenormalizerInterfa
 
     public function hasCacheableSupportsMethod(): bool
     {
+        trigger_deprecation('symfony/serializer', '6.3', 'CacheableSupportsMethodInterface::hasCacheableSupportsMethod() is deprecated, use "getSupportedTypes()" return value instead.');
+
         return __CLASS__ === static::class;
     }
 
