@@ -19,7 +19,7 @@ use Symfony\Component\Serializer\Exception\LogicException;
  *
  * @author Fred Cox <mcfedr@gmail.com>
  */
-class JsonSerializableNormalizer extends AbstractNormalizer implements SupportedTypesMethodInterface
+class JsonSerializableNormalizer extends AbstractNormalizer
 {
     public function normalize(mixed $object, string $format = null, array $context = []): array|string|int|float|bool|\ArrayObject|null
     {
@@ -41,7 +41,7 @@ class JsonSerializableNormalizer extends AbstractNormalizer implements Supported
     public function getSupportedTypes(): array
     {
         return [
-            \JsonSerializable::class => __CLASS__ === static::class,
+            \JsonSerializable::class,
         ];
     }
 
@@ -50,6 +50,8 @@ class JsonSerializableNormalizer extends AbstractNormalizer implements Supported
      */
     public function supportsNormalization(mixed $data, string $format = null /* , array $context = [] */): bool
     {
+        trigger_deprecation('symfony/serializer', '6.3', 'NormalizerInterface::supportsNormalization() is deprecated, use "getSupportedFormat"/"getSupportedTypes()" return values instead.');
+
         return $data instanceof \JsonSerializable;
     }
 
@@ -58,6 +60,8 @@ class JsonSerializableNormalizer extends AbstractNormalizer implements Supported
      */
     public function supportsDenormalization(mixed $data, string $type, string $format = null /* , array $context = [] */): bool
     {
+        trigger_deprecation('symfony/serializer', '6.3', 'NormalizerInterface::supportsDenormalization() is deprecated, use "getSupportedFormat"/"getSupportedTypes()" return values instead.');
+
         return false;
     }
 

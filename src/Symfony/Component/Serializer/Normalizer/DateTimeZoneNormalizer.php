@@ -20,12 +20,12 @@ use Symfony\Component\Serializer\Exception\NotNormalizableValueException;
  *
  * @author Jérôme Desjardins <jewome62@gmail.com>
  */
-class DateTimeZoneNormalizer implements NormalizerInterface, DenormalizerInterface, CacheableSupportsMethodInterface, SupportedTypesMethodInterface
+class DateTimeZoneNormalizer implements NormalizerInterface, DenormalizerInterface, CacheableSupportsMethodInterface
 {
     public function getSupportedTypes(): array
     {
         return [
-            \DateTimeZone::class => __CLASS__ === static::class,
+            \DateTimeZone::class,
         ];
     }
 
@@ -46,6 +46,8 @@ class DateTimeZoneNormalizer implements NormalizerInterface, DenormalizerInterfa
      */
     public function supportsNormalization(mixed $data, string $format = null /* , array $context = [] */): bool
     {
+        trigger_deprecation('symfony/serializer', '6.3', 'NormalizerInterface::supportsNormalization() is deprecated, use "getSupportedFormat"/"getSupportedTypes()" return values instead.');
+
         return $data instanceof \DateTimeZone;
     }
 
@@ -70,6 +72,8 @@ class DateTimeZoneNormalizer implements NormalizerInterface, DenormalizerInterfa
      */
     public function supportsDenormalization(mixed $data, string $type, string $format = null /* , array $context = [] */): bool
     {
+        trigger_deprecation('symfony/serializer', '6.3', 'NormalizerInterface::supportsDenormalization() is deprecated, use "getSupportedFormat"/"getSupportedTypes()" return values instead.');
+
         return \DateTimeZone::class === $type;
     }
 

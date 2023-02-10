@@ -21,6 +21,10 @@ use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 
 /**
  * @author Jordi Boggiano <j.boggiano@seld.be>
+ *
+ *
+ * @method getSupportedTypes(): ?array
+ * @method getSupportedFormats(): ?array
  */
 interface DenormalizerInterface
 {
@@ -55,6 +59,8 @@ interface DenormalizerInterface
      * @param array  $context Options available to the denormalizer
      *
      * @return bool
+     *
+     * @deprecated since Symfony 6.3, implement getSupportedTypes() and getSupportedFormats() instead, implement ContextDependantDenormalizer if you rely on $context
      */
     public function supportsDenormalization(mixed $data, string $type, string $format = null /* , array $context = [] */);
 }

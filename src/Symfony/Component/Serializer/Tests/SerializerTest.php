@@ -1245,8 +1245,8 @@ class SerializerTest extends TestCase
             ->expects($this->exactly(2))
             ->method('getSupportedTypes')
             ->willReturn([
-                Foo::class => true,
-                Bar::class => false,
+                Foo::class,
+                Bar::class,
             ]);
 
         $supportedAndCachedNormalizer = $this->createMock(DummyNormalizer::class);
@@ -1255,8 +1255,22 @@ class SerializerTest extends TestCase
             ->expects($this->exactly(2))
             ->method('getSupportedTypes')
             ->willReturn([
-                Model::class => true,
+                Model::class,
             ]);
+
+        // We should never need to call supportsNormalization or supportsDenormalization
+        $neverCalledNormalizer
+            ->expects($this->never())
+            ->method('supportsNormalization');
+        $supportedAndCachedNormalizer
+            ->expects($this->never())
+            ->method('supportsNormalization');
+        $neverCalledNormalizer
+            ->expects($this->never())
+            ->method('supportsDenormalization');
+        $supportedAndCachedNormalizer
+            ->expects($this->never())
+            ->method('supportsDenormalization');
 
         $serializer = new Serializer(
             [
@@ -1270,15 +1284,8 @@ class SerializerTest extends TestCase
         // Normalization process
         $neverCalledNormalizer
             ->expects($this->never())
-            ->method('supportsNormalization');
-        $neverCalledNormalizer
-            ->expects($this->never())
             ->method('normalize');
 
-        $supportedAndCachedNormalizer
-            ->expects($this->once())
-            ->method('supportsNormalization')
-            ->willReturn(true);
         $supportedAndCachedNormalizer
             ->expects($this->exactly(2))
             ->method('normalize')
@@ -1290,14 +1297,7 @@ class SerializerTest extends TestCase
         // Denormalization pass
         $neverCalledNormalizer
             ->expects($this->never())
-            ->method('supportsDenormalization');
-        $neverCalledNormalizer
-            ->expects($this->never())
             ->method('denormalize');
-        $supportedAndCachedNormalizer
-            ->expects($this->once())
-            ->method('supportsDenormalization')
-            ->willReturn(true);
         $supportedAndCachedNormalizer
             ->expects($this->exactly(2))
             ->method('denormalize')
@@ -1460,8 +1460,9 @@ class DummyList extends \ArrayObject
     }
 }
 
-abstract class DummyNormalizer implements NormalizerInterface, DenormalizerInterface, SupportedTypesMethodInterface
+abstract class DummyNormalizer implements NormalizerInterface, DenormalizerInterface
 {
+    abstract public function getSupportedTypes(): array;
 }
 
 interface NormalizerAwareNormalizer extends NormalizerInterface, NormalizerAwareInterface

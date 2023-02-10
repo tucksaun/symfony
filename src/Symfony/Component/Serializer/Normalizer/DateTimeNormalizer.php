@@ -21,7 +21,7 @@ use Symfony\Component\Serializer\Exception\NotNormalizableValueException;
  *
  * @author Kévin Dunglas <dunglas@gmail.com>
  */
-class DateTimeNormalizer implements NormalizerInterface, DenormalizerInterface, CacheableSupportsMethodInterface, SupportedTypesMethodInterface
+class DateTimeNormalizer implements NormalizerInterface, DenormalizerInterface, CacheableSupportsMethodInterface
 {
     public const FORMAT_KEY = 'datetime_format';
     public const TIMEZONE_KEY = 'datetime_timezone';
@@ -49,7 +49,7 @@ class DateTimeNormalizer implements NormalizerInterface, DenormalizerInterface, 
 
     public function getSupportedTypes(): array
     {
-        return self::SUPPORTED_TYPES;
+        return array_keys(self::SUPPORTED_TYPES);
     }
 
     /**
@@ -77,6 +77,8 @@ class DateTimeNormalizer implements NormalizerInterface, DenormalizerInterface, 
      */
     public function supportsNormalization(mixed $data, string $format = null /* , array $context = [] */): bool
     {
+        trigger_deprecation('symfony/serializer', '6.3', 'NormalizerInterface::supportsNormalization() is deprecated, use "getSupportedFormat"/"getSupportedTypes()" return values instead.');
+
         return $data instanceof \DateTimeInterface;
     }
 
@@ -126,6 +128,8 @@ class DateTimeNormalizer implements NormalizerInterface, DenormalizerInterface, 
      */
     public function supportsDenormalization(mixed $data, string $type, string $format = null /* , array $context = [] */): bool
     {
+        trigger_deprecation('symfony/serializer', '6.3', 'NormalizerInterface::supportsDenormalization() is deprecated, use "getSupportedFormat"/"getSupportedTypes()" return values instead.');
+
         return isset(self::SUPPORTED_TYPES[$type]);
     }
 

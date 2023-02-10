@@ -28,7 +28,7 @@ use Symfony\Component\Serializer\SerializerInterface;
  *
  * @internal
  */
-class TraceableNormalizer implements NormalizerInterface, DenormalizerInterface, SerializerAwareInterface, NormalizerAwareInterface, DenormalizerAwareInterface, SupportedTypesMethodInterface, CacheableSupportsMethodInterface
+class TraceableNormalizer implements NormalizerInterface, DenormalizerInterface, SerializerAwareInterface, NormalizerAwareInterface, DenormalizerAwareInterface, CacheableSupportsMethodInterface
 {
     public function __construct(
         private NormalizerInterface|DenormalizerInterface $normalizer,
@@ -38,7 +38,7 @@ class TraceableNormalizer implements NormalizerInterface, DenormalizerInterface,
 
     public function getSupportedTypes(): ?array
     {
-        if ($this->normalizer instanceof SupportedTypesMethodInterface) {
+        if (method_exists($this->normalizer, 'getSupportedTypes')) {
             return $this->normalizer->getSupportedTypes();
         }
 

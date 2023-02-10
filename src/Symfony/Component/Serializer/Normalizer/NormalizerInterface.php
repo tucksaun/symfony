@@ -18,6 +18,9 @@ use Symfony\Component\Serializer\Exception\LogicException;
 
 /**
  * @author Jordi Boggiano <j.boggiano@seld.be>
+ *
+ * @method getSupportedTypes(): ?array
+ * @method getSupportedFormats(): ?array
  */
 interface NormalizerInterface
 {
@@ -46,6 +49,8 @@ interface NormalizerInterface
      * @param array  $context Context options for the normalizer
      *
      * @return bool
+     *
+     * @deprecated since Symfony 6.3, implement getSupportedTypes() and getSupportedFormats() instead, implement ContextDependantNormalizer if you rely on $context
      */
     public function supportsNormalization(mixed $data, string $format = null /* , array $context = [] */);
 }

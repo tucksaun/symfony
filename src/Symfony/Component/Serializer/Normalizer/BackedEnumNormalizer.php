@@ -20,12 +20,12 @@ use Symfony\Component\Serializer\Exception\NotNormalizableValueException;
  *
  * @author Alexandre Daubois <alex.daubois@gmail.com>
  */
-final class BackedEnumNormalizer implements NormalizerInterface, DenormalizerInterface, CacheableSupportsMethodInterface, SupportedTypesMethodInterface
+final class BackedEnumNormalizer implements NormalizerInterface, DenormalizerInterface, CacheableSupportsMethodInterface
 {
     public function getSupportedTypes(): array
     {
         return [
-           \BackedEnum::class => true,
+           \BackedEnum::class,
         ];
     }
 
@@ -40,6 +40,8 @@ final class BackedEnumNormalizer implements NormalizerInterface, DenormalizerInt
 
     public function supportsNormalization(mixed $data, string $format = null, array $context = []): bool
     {
+        trigger_deprecation('symfony/serializer', '6.3', 'NormalizerInterface::supportsNormalization() is deprecated, use "getSupportedFormat"/"getSupportedTypes()" return values instead.');
+
         return $data instanceof \BackedEnum;
     }
 
@@ -65,6 +67,8 @@ final class BackedEnumNormalizer implements NormalizerInterface, DenormalizerInt
 
     public function supportsDenormalization(mixed $data, string $type, string $format = null, array $context = []): bool
     {
+        trigger_deprecation('symfony/serializer', '6.3', 'NormalizerInterface::supportsDenormalization() is deprecated, use "getSupportedFormat"/"getSupportedTypes()" return values instead.');
+
         return is_subclass_of($type, \BackedEnum::class);
     }
 

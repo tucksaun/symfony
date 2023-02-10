@@ -23,7 +23,7 @@ use Symfony\Component\Serializer\Exception\NotNormalizableValueException;
  *
  * @author Kévin Dunglas <dunglas@gmail.com>
  */
-class DataUriNormalizer implements NormalizerInterface, DenormalizerInterface, CacheableSupportsMethodInterface, SupportedTypesMethodInterface
+class DataUriNormalizer implements NormalizerInterface, DenormalizerInterface, CacheableSupportsMethodInterface
 {
     private const SUPPORTED_TYPES = [
         \SplFileInfo::class => true,
@@ -47,7 +47,7 @@ class DataUriNormalizer implements NormalizerInterface, DenormalizerInterface, C
 
     public function getSupportedTypes(): array
     {
-        return self::SUPPORTED_TYPES;
+        return array_keys(self::SUPPORTED_TYPES);
     }
 
     public function normalize(mixed $object, string $format = null, array $context = []): string
@@ -78,6 +78,8 @@ class DataUriNormalizer implements NormalizerInterface, DenormalizerInterface, C
      */
     public function supportsNormalization(mixed $data, string $format = null /* , array $context = [] */): bool
     {
+        trigger_deprecation('symfony/serializer', '6.3', 'NormalizerInterface::supportsNormalization() is deprecated, use "getSupportedFormat"/"getSupportedTypes()" return values instead.');
+
         return $data instanceof \SplFileInfo;
     }
 
@@ -120,6 +122,8 @@ class DataUriNormalizer implements NormalizerInterface, DenormalizerInterface, C
      */
     public function supportsDenormalization(mixed $data, string $type, string $format = null /* , array $context = [] */): bool
     {
+        trigger_deprecation('symfony/serializer', '6.3', 'NormalizerInterface::supportsDenormalization() is deprecated, use "getSupportedFormat"/"getSupportedTypes()" return values instead.');
+
         return isset(self::SUPPORTED_TYPES[$type]);
     }
 

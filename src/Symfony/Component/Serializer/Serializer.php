@@ -26,6 +26,8 @@ use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\ContextAwareDenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ContextAwareNormalizerInterface;
+use Symfony\Component\Serializer\Normalizer\ContextDependantDenormalizerInterface;
+use Symfony\Component\Serializer\Normalizer\ContextDependantNormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareInterface;
@@ -257,24 +259,30 @@ class Serializer implements SerializerInterface, ContextAwareNormalizerInterface
                     continue;
                 }
 
-                if ($normalizer instanceof SupportedTypesMethodInterface && null !== $supportedTypes = $normalizer->getSupportedTypes()) {
-                    foreach ($supportedTypes as $supportedType => $isCacheable) {
+                if (method_exists($normalizer, 'getSupportedFormats') && null !== ($supportedFormats = $normalizer->getSupportedFormats()) && !in_array($format, $supportedFormats, true)) {
+                    continue;
+                }
+
+                if (method_exists($normalizer, 'getSupportedTypes') && null !== $supportedTypes = $normalizer->getSupportedTypes()) {
+                    foreach ($supportedTypes as $supportedType) {
                         if ($type !== $supportedType && !is_subclass_of($type, $supportedType, true)) {
                             continue;
                         }
 
-                        if ($isCacheable && $normalizer->supportsNormalization($data, $format, $context)) {
-                            $this->normalizerCache[$format][$type][$k] = true;
-                            break 2;
+                        $this->normalizerCache[$format][$type][$k] = true;
+
+                        if ($normalizer instanceof ContextDependantNormalizerInterface) {
+                            break;
                         }
 
-                        $this->normalizerCache[$format][$type][$k] = false;
-                        break;
+                        break 2;
                     }
 
                     continue;
                 }
 
+                // BC layer: to be removed in 7.0
+                trigger_deprecation('symfony/serializer', '6.3', 'NormalizerInterface::supportsNormalization is deprecated, implement "getSupportedFormats()" and "getSupportedTypes()" instead.');
                 if (!$normalizer instanceof CacheableSupportsMethodInterface || !$normalizer->hasCacheableSupportsMethod()) {
                     $this->normalizerCache[$format][$type][$k] = false;
                 } elseif ($normalizer->supportsNormalization($data, $format, $context)) {
@@ -286,6 +294,11 @@ class Serializer implements SerializerInterface, ContextAwareNormalizerInterface
 
         foreach ($this->normalizerCache[$format][$type] as $k => $cached) {
             $normalizer = $this->normalizers[$k];
+            if ($normalizer instanceof ContextDependantNormalizerInterface && !$normalizer->supportsContextNormalization($context)) {
+                continue;
+            }
+
+            // BC layer: condition to be removed in 7.0
             if ($cached || $normalizer->supportsNormalization($data, $format, $context)) {
                 return $normalizer;
             }
@@ -312,24 +325,30 @@ class Serializer implements SerializerInterface, ContextAwareNormalizerInterface
                     continue;
                 }
 
-                if ($normalizer instanceof SupportedTypesMethodInterface && null !== $supportedTypes = $normalizer->getSupportedTypes()) {
-                    foreach ($supportedTypes as $supportedType => $isCacheable) {
+                if (method_exists($normalizer, 'getSupportedFormats') && null !== ($supportedFormats = $normalizer->getSupportedFormats()) && !in_array($format, $supportedFormats, true)) {
+                    continue;
+                }
+
+                if (method_exists($normalizer, 'getSupportedTypes') && null !== $supportedTypes = $normalizer->getSupportedTypes()) {
+                    foreach ($supportedTypes as $supportedType) {
                         if ($class !== $supportedType && !is_subclass_of($class, $supportedType, true)) {
                             continue;
                         }
 
-                        if ($isCacheable && $normalizer->supportsDenormalization(null, $class, $format, $context)) {
-                            $this->denormalizerCache[$format][$class][$k] = true;
-                            break 2;
+                        $this->denormalizerCache[$format][$class][$k] = true;
+
+                        if ($normalizer instanceof ContextDependantDenormalizerInterface) {
+                            break;
                         }
 
-                        $this->denormalizerCache[$format][$class][$k] = false;
-                        break;
+                        break 2;
                     }
 
                     continue;
                 }
 
+                // BC layer: to be removed in 7.0
+                trigger_deprecation('symfony/serializer', '6.3', 'DenormalizerInterface::supportsDenormalization is deprecated, implement "getSupportedFormats()" and "getSupportedTypes()" instead.');
                 if (!$normalizer instanceof CacheableSupportsMethodInterface || !$normalizer->hasCacheableSupportsMethod()) {
                     $this->denormalizerCache[$format][$class][$k] = false;
                 } elseif ($normalizer->supportsDenormalization(null, $class, $format, $context)) {
@@ -341,6 +360,11 @@ class Serializer implements SerializerInterface, ContextAwareNormalizerInterface
 
         foreach ($this->denormalizerCache[$format][$class] as $k => $cached) {
             $normalizer = $this->normalizers[$k];
+            if ($normalizer instanceof ContextDependantDenormalizerInterface && !$normalizer->supportsContextDenormalization($data, $context)) {
+                continue;
+            }
+
+            // BC layer: condition to be removed in 7.0
             if ($cached || $normalizer->supportsDenormalization($data, $class, $format, $context)) {
                 return $normalizer;
             }

@@ -20,7 +20,7 @@ namespace Symfony\Component\Serializer\Normalizer;
  *
  * @author Kévin Dunglas <dunglas@gmail.com>
  *
- * @deprecated since Symfony 6.3, implement "getSupportedTypes()" instead
+ * @deprecated since Symfony 6.3, implement "ContextDependantNormalizerInterface" or "ContextDependantDenormalizerInterface" instead if you were returning false
  */
 interface CacheableSupportsMethodInterface
 {

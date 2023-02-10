@@ -28,7 +28,7 @@ use Symfony\Component\Serializer\SerializerInterface;
  *
  * Emails using resources for any parts are not serializable.
  */
-final class MimeMessageNormalizer implements NormalizerInterface, DenormalizerInterface, SerializerAwareInterface, CacheableSupportsMethodInterface, SupportedTypesMethodInterface
+final class MimeMessageNormalizer implements NormalizerInterface, DenormalizerInterface, SerializerAwareInterface, CacheableSupportsMethodInterface
 {
     private $serializer;
     private $normalizer;
@@ -45,11 +45,11 @@ final class MimeMessageNormalizer implements NormalizerInterface, DenormalizerIn
     public function getSupportedTypes(): array
     {
         return [
-            Message::class => true,
-            Headers::class => true,
-            HeaderInterface::class => true,
-            Address::class => true,
-            AbstractPart::class => true,
+            Message::class,
+            Headers::class,
+            HeaderInterface::class,
+            Address::class,
+            AbstractPart::class,
         ];
     }
 
@@ -104,11 +104,15 @@ final class MimeMessageNormalizer implements NormalizerInterface, DenormalizerIn
 
     public function supportsNormalization(mixed $data, string $format = null, array $context = []): bool
     {
+        trigger_deprecation('symfony/serializer', '6.3', 'NormalizerInterface::supportsNormalization() is deprecated, use "getSupportedFormat"/"getSupportedTypes()" return values instead.');
+
         return $data instanceof Message || $data instanceof Headers || $data instanceof HeaderInterface || $data instanceof Address || $data instanceof AbstractPart;
     }
 
     public function supportsDenormalization(mixed $data, string $type, string $format = null, array $context = []): bool
     {
+        trigger_deprecation('symfony/serializer', '6.3', 'NormalizerInterface::supportsDenormalization() is deprecated, use "getSupportedFormat"/"getSupportedTypes()" return values instead.');
+
         return is_a($type, Message::class, true) || Headers::class === $type || AbstractPart::class === $type;
     }
 

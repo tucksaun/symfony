@@ -20,7 +20,7 @@ use Symfony\Component\Serializer\Exception\UnexpectedValueException;
  *
  * @author Jérôme Parmentier <jerome@prmntr.me>
  */
-class DateIntervalNormalizer implements NormalizerInterface, DenormalizerInterface, CacheableSupportsMethodInterface, SupportedTypesMethodInterface
+class DateIntervalNormalizer implements NormalizerInterface, DenormalizerInterface, CacheableSupportsMethodInterface
 {
     public const FORMAT_KEY = 'dateinterval_format';
 
@@ -36,7 +36,7 @@ class DateIntervalNormalizer implements NormalizerInterface, DenormalizerInterfa
     public function getSupportedTypes(): array
     {
         return [
-            \DateInterval::class => __CLASS__ === static::class,
+            \DateInterval::class,
         ];
     }
 
@@ -45,6 +45,8 @@ class DateIntervalNormalizer implements NormalizerInterface, DenormalizerInterfa
      */
     public function normalize(mixed $object, string $format = null, array $context = []): string
     {
+        trigger_deprecation('symfony/serializer', '6.3', 'NormalizerInterface::supportsNormalization() is deprecated, use "getSupportedFormat"/"getSupportedTypes()" return values instead.');
+
         if (!$object instanceof \DateInterval) {
             throw new InvalidArgumentException('The object must be an instance of "\DateInterval".');
         }
@@ -122,6 +124,8 @@ class DateIntervalNormalizer implements NormalizerInterface, DenormalizerInterfa
      */
     public function supportsDenormalization(mixed $data, string $type, string $format = null /* , array $context = [] */): bool
     {
+        trigger_deprecation('symfony/serializer', '6.3', 'NormalizerInterface::supportsDenormalization() is deprecated, use "getSupportedFormat"/"getSupportedTypes()" return values instead.');
+
         return \DateInterval::class === $type;
     }
 

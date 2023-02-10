@@ -22,7 +22,7 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
  * @author Grégoire Pineau <lyrixx@lyrixx.info>
  * @author Kévin Dunglas <dunglas@gmail.com>
  */
-class ConstraintViolationListNormalizer implements NormalizerInterface, CacheableSupportsMethodInterface, SupportedTypesMethodInterface
+class ConstraintViolationListNormalizer implements NormalizerInterface, CacheableSupportsMethodInterface
 {
     public const INSTANCE = 'instance';
     public const STATUS = 'status';

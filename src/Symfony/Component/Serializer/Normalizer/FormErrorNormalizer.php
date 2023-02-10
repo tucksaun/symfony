@@ -16,7 +16,7 @@ use Symfony\Component\Form\FormInterface;
 /**
  * Normalizes invalid Form instances.
  */
-final class FormErrorNormalizer implements NormalizerInterface, CacheableSupportsMethodInterface, SupportedTypesMethodInterface
+final class FormErrorNormalizer implements NormalizerInterface, CacheableSupportsMethodInterface
 {
     public const TITLE = 'title';
     public const TYPE = 'type';
@@ -41,12 +41,14 @@ final class FormErrorNormalizer implements NormalizerInterface, CacheableSupport
     public function getSupportedTypes(): array
     {
         return [
-            FormInterface::class => __CLASS__ == self::class,
+            FormInterface::class,
         ];
     }
 
     public function supportsNormalization(mixed $data, string $format = null, array $context = []): bool
     {
+        trigger_deprecation('symfony/serializer', '6.3', 'NormalizerInterface::supportsNormalization() is deprecated, use "getSupportedFormat"/"getSupportedTypes()" return values instead.');
+
         return $data instanceof FormInterface && $data->isSubmitted() && !$data->isValid();
     }
 

@@ -945,13 +945,11 @@ XML;
         $mock
             ->expects($this->once())
             ->method('getSupportedTypes')
-            ->willReturn([\DateTime::class => true]);
+            ->willReturn([\DateTime::class]);
 
         $mock
-            ->expects($this->once())
-            ->method('supportsNormalization')
-            ->with(new \DateTime($this->exampleDateTimeString), 'xml')
-            ->willReturn(true);
+            ->expects($this->never())
+            ->method('supportsNormalization');
 
         return $mock;
     }

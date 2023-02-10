@@ -17,7 +17,7 @@ use Symfony\Component\Serializer\Exception\NotNormalizableValueException;
 use Symfony\Component\Uid\AbstractUid;
 use Symfony\Component\Uid\Uuid;
 
-final class UidNormalizer implements NormalizerInterface, DenormalizerInterface, CacheableSupportsMethodInterface, SupportedTypesMethodInterface
+final class UidNormalizer implements NormalizerInterface, DenormalizerInterface, CacheableSupportsMethodInterface
 {
     public const NORMALIZATION_FORMAT_KEY = 'uid_normalization_format';
 
@@ -44,7 +44,7 @@ final class UidNormalizer implements NormalizerInterface, DenormalizerInterface,
     public function getSupportedTypes(): array
     {
         return [
-            AbstractUid::class => true,
+            AbstractUid::class,
         ];
     }
 
@@ -64,6 +64,8 @@ final class UidNormalizer implements NormalizerInterface, DenormalizerInterface,
 
     public function supportsNormalization(mixed $data, string $format = null, array $context = []): bool
     {
+        trigger_deprecation('symfony/serializer', '6.3', 'NormalizerInterface::supportsNormalization() is deprecated, use "getSupportedFormat"/"getSupportedTypes()" return values instead.');
+
         return $data instanceof AbstractUid;
     }
 
@@ -95,6 +97,8 @@ final class UidNormalizer implements NormalizerInterface, DenormalizerInterface,
 
             return true;
         }
+
+        trigger_deprecation('symfony/serializer', '6.3', 'NormalizerInterface::supportsDenormalization() is deprecated, use "getSupportedFormat"/"getSupportedTypes()" return values instead.');
 
         return is_subclass_of($type, AbstractUid::class, true);
     }
